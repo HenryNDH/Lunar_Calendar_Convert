@@ -27,11 +27,11 @@ export function convertLunarToSolar({ lunarMonth, lunarDay, approximateSolarYear
         currentDate.setDate(currentDate.getDate() + 1);
     }
 
-    if (!foundSolarDate) {
+    if (foundSolarDate) {
+        return foundSolarDate;
+    } else {
         throw new Error(
             "No solar date found for the given lunar date and approximate year within the search range."
         );
     }
-
-    return foundSolarDate;
 }

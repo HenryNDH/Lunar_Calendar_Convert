@@ -1,72 +1,56 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import './App.css';
-import { convertLunarToSolar } from './converter';
+import SavedDatesDisplay from './SavedDatesDisplay';
+import LunarConverter from "./LunarConverter.jsx";
+import {SaveControl} from "./SaveControl.jsx";
 
 function App() {
-    const [lunarMonth, setLunarMonth] = useState('');
-    const [lunarDay, setLunarDay] = useState('');
-    const curYear = new Date().getFullYear();
-    const [approximateSolarYear] = useState(curYear);
-    const [solarDateResult, setSolarDateResult] = useState('');
-    const [error, setError] = useState('');
+    const [solarDate, setSolarDate] = useState(null);
 
-    const handleConvert = () => {
-        setError('');
-        setSolarDateResult('');
-
-        if (!lunarMonth || !lunarDay || !approximateSolarYear) {
-            setError('Please enter Lunar Month, Lunar Day, and Approximate Solar Year.');
+    const handleSaveData = (description) => {
+        if (!solarDate) {
+            console.error("Invalid solar date");
             return;
         }
 
-        try {
-            const { year, month, day } = convertLunarToSolar({
-                lunarMonth: parseInt(lunarMonth),
-                lunarDay: parseInt(lunarDay),
-                approximateSolarYear: approximateSolarYear,
-            });
+        const dataToSave = {
+            ...solarDate,
+            desc: description || 'No description',
+        };
 
-            setSolarDateResult(`Solar Date: ${month}/${day}/${year}`);
-        } catch (err) {
-            setError(`Failed to convert date: ${err.message}`);
-        }
+        fetch('http://localhost:8080/api/calendar-entries', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataToSave),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Successfully saved:", data);
+                alert("Date saved successfully!");
+            })
+            .catch(error => {
+                console.error("Failed to save data:", error);
+                alert("Failed to save data.");
+            });
     };
 
+
     return (
-        <div className="app-container">
-            <div className="converter-box">
-                <h1 className="title">Lunar to Solar Date Converter</h1>
-
-                <div className="form">
-
-
-                    <div className="input-group">
-                        <label htmlFor="lunarDay">Lunar Day:</label>
-                        <input
-                            type="number"
-                            id="lunarDay"
-                            value={lunarDay}
-                            onChange={(e) => setLunarDay(e.target.value)}
-                            placeholder="e.g., 25"
-                        />
-                    </div>
-                    <div className="input-group">
-                        <label htmlFor="lunarMonth">Lunar Month:</label>
-                        <input
-                            type="number"
-                            id="lunarMonth"
-                            value={lunarMonth}
-                            onChange={(e) => setLunarMonth(e.target.value)}
-                            placeholder="e.g., 9"
-                        />
-                    </div>
-                    <button onClick={handleConvert}>Convert to Solar Date</button>
+        <div className="min-h-screen bg-gray-100 p-4 flex items-center justify-center">
+            <div className="flex flex-col md:flex-row w-full max-w-6xl bg-white rounded-lg shadow-xl p-6 gap-8">
+                <div className="flex-1 space-y-6">
+                    <LunarConverter setSolarDate={setSolarDate}/>
+                    <SaveControl handleSaveData={handleSaveData}></SaveControl>
                 </div>
 
-                {error && <div className="message error">Error: {error}</div>}
-                {solarDateResult && !error && (
-                    <div className="message result">{solarDateResult}</div>
-                )}
+                <SavedDatesDisplay/>
             </div>
         </div>
     );
