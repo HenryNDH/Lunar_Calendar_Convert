@@ -1,4 +1,3 @@
-import {useState} from "react";
 import {SolarDate} from "./SolarDate.jsx"
 
 function NumberInput({value, setValue, placeHolder, children}) {
@@ -11,13 +10,13 @@ function NumberInput({value, setValue, placeHolder, children}) {
             className="input input-bordered w-full rounded-md"
             placeholder={placeHolder}
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => setValue(parseInt(e.target.value))}
         />
     </label>;
 }
 
-export default function LunarConverter({setSolarDate}) {
-    const [lunarDate, setLunarDate] = useState(todaysLunarDate);
+export default function LunarConverter({setSolarDate, lunarDate, setLunarDate}) {
+
 
     return (
         <>
@@ -31,13 +30,7 @@ export default function LunarConverter({setSolarDate}) {
                              placeHolder={"e.g., 15"}> Lunar Day </NumberInput>
             </div>
 
-            {/* Output */}
             <SolarDate lunarDate={lunarDate} setSolarDate={setSolarDate}/>
         </>
     );
-
-    function todaysLunarDate() {
-        const today = new Date();
-        return {day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear()};
-    }
 }

@@ -14,15 +14,18 @@ function TextInput({value, setValue}) {
     </label>;
 }
 
+function SaveButton({handleSaveData, description}) {
+    return <button className="btn btn-primary w-full rounded-md" onClick={() => handleSaveData(description)}>
+        Save Data
+    </button>;
+}
+
 export function SaveControl({handleSaveData}) {
     const [description, setDescription] = useState('');
 
     return <>
         <TextInput value={description} setValue={setDescription}></TextInput>
-
-        {/* Save Button */}
-        <button className="btn btn-primary w-full rounded-md" onClick={() => handleSaveData(description)}>
-            Save Data
-        </button>
+        <br/><br/>
+        <SaveButton handleSaveData={handleSaveData} description={description}></SaveButton>
     </>;
 }
