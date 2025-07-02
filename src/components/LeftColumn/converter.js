@@ -59,7 +59,6 @@ export function convertSolarToLunar({ solarYear, solarMonth, solarDay }) {
             isLeapMonth: moon.isLeapMonth // Include if you need to know if it's a leap lunar month
         };
     } catch (error) {
-        // moon-time might throw an error for invalid solar dates (e.g., Feb 30th)
         throw new Error(`Failed to convert solar date to lunar: ${error.message}`);
     }
 }
